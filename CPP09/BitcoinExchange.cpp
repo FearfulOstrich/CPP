@@ -1,5 +1,18 @@
 #include "BitcoinExchange.hpp"
 
+int	stoi(std::string number)
+{
+	int			i = 0;
+	const char	*s = number.c_str();
+
+	while (*s)
+	{
+		i += 10 * i + (*s - '0');
+		s++;
+	}
+	return (i);
+}
+
 bool	isDateOk(std::string date)
 {
 	std::string				year;
@@ -22,7 +35,7 @@ bool	isDateOk(std::string date)
 	for (it = date.begin(); it != date.end(); it++)
 		day += *it;
 
-	if ((std::stoi(year) < 2009 || std::stoi(year) > 2022) || (std::stoi(month) < 1 || std::stoi(month) > 12) || (std::stoi(day) < 1 || std::stoi(day) > 31))
+	if ((stoi(year) < 2009 || stoi(year) > 2022) || (stoi(month) < 1 || stoi(month) > 12) || (stoi(day) < 1 || stoi(day) > 31))
 	{
 		std::cout << "Error: bad input => " << year << "-" << month << "-" << day << std::endl;
 		return (false);
@@ -53,7 +66,7 @@ std::map<std::string, float>	parseDatabase(std::string file) {
 	std::string						key;
 	float 							value;
 
-	ifs.open(file, std::ifstream::in);
+	ifs.open(file.c_str());
 
 	if (!ifs.is_open())
 		return (exchMap);
@@ -61,7 +74,7 @@ std::map<std::string, float>	parseDatabase(std::string file) {
 	for( std::string line; std::getline(ifs, line);)
 	{
 			key = line.substr(0, line.find(',', 0));
-			std::stringstream ss(line.substr(line.find(',', 0) + 1), line.find('\n', 0));
+			std::stringstream ss(line.substr(line.find(',', 0) + 1));
 			ss >> value;
 
 		if (key != "date" && isDateOk(key))
@@ -131,7 +144,7 @@ void	getResult(std::map<std::string, float> exchMap, std::string file) {
 	std::string		date;
 	float			result;
 
-	ifs.open(file, std::ifstream::in);
+	ifs.open(file.c_str());
 
 	if (!ifs.is_open())
 	{
@@ -144,7 +157,7 @@ void	getResult(std::map<std::string, float> exchMap, std::string file) {
 		date = line.substr(0, line.find('|', 0) - 1);
 		if (date != "date")
 		{
-			std::stringstream ss(line.substr(line.find('|', 0) + 2), line.find('\n', 0));
+			std::stringstream ss(line.substr(line.find('|', 0) + 2));
 			ss >> value;
 			if (isValueOk(value) && isDateOk(date))
 			{
